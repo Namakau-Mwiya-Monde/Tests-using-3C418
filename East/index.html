@@ -3,7 +3,7 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Fake East</title>
+<title>Fake East components</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
@@ -125,12 +125,14 @@ canvas{
 ▲ M1 &nbsp;&nbsp;
 ■ M2 &nbsp;&nbsp;
 ♦ M3 &nbsp;&nbsp;
-★ M4
+★ M4 &nbsp;&nbsp;
+✚ M5
 
 — solid: NoCorr → M1 &nbsp;&nbsp;
 ⋯ dotted: NoCorr → M2 &nbsp;&nbsp;
 – – dashed: NoCorr → M3 <br>
-⋅⋅⋅ dash-dot: NoCorr → M4
+⋅⋅⋅ dash-dot: NoCorr → M4 &nbsp;&nbsp;
+— — long-dash: NoCorr → M5
 
 <b>X</b>: X-band a priori
 </div>
@@ -146,11 +148,11 @@ let RAW={}, SRC=null;
 
 async function loadAll(){
 
-    let files = await fetch('file_list_combined_East.json').then(r=>r.json());
+    let files = await fetch('file_list_combined_zSouth_West.json').then(r=>r.json());
 
     for(let f of files){
 
-        let name = f.split('_all_methods_fake_East')[0];
+        let name = f.split('_all_methods_zSW')[0];
 
         let res = await fetch(f);
 
@@ -232,7 +234,13 @@ function parseCSV(t){
 	    ra_M4:+o.RA_offset_mas_M4,
 	    dec_M4:+o.Dec_offset_mas_M4,
 	    e_ra_M4:+o.RA_std_mas_M4,
-	    e_dec_M4:+o.Dec_std_mas_M4
+	    e_dec_M4:+o.Dec_std_mas_M4,
+	    
+	    // M5
+	    ra_M5:+o.RA_offset_mas_M5,
+	    dec_M5:+o.Dec_offset_mas_M5,
+	    e_ra_M5:+o.RA_std_mas_M5,
+	    e_dec_M5:+o.Dec_std_mas_M5
         };
     });
 }
@@ -334,7 +342,8 @@ function drawTS(){
                 ds("ra_M1","e_ra_M1","M1","#D81B60"),
                 ds("ra_M2","e_ra_M2","M2","#43A047"),
                 ds("ra_M3","e_ra_M3","M3","#8E24AA"),
-                ds("ra_M4","e_ra_M4","M4","#FB8C00")
+                ds("ra_M4","e_ra_M4","M4","#FB8C00"),
+                ds("ra_M5","e_ra_M5","M5","#00897B")
             ]
         },
 
@@ -378,7 +387,8 @@ function drawTS(){
                 ds("dec_M1","e_dec_M1","M1","#D81B60"),
                 ds("dec_M2","e_dec_M2","M2","#43A047"),
                 ds("dec_M3","e_dec_M3","M3","#8E24AA"),
-                ds("ra_M4","e_ra_M4","M4","#FB8C00")
+                ds("ra_M4","e_ra_M4","M4","#FB8C00"),
+                ds("dec_M5","e_dec_M5","M5","#00897B")
             ]
         },
 
@@ -517,7 +527,12 @@ function drawChi2(){
         d.map(x=>x.ra_M4),
         d.map(x=>x.e_ra_M4)
     );
-
+    html+=buildTable(
+    "M5",
+        s,
+        d.map(x=>x.ra_M5),
+        d.map(x=>x.e_ra_M5)
+    );
     html+="<h3>Dec</h3>";
 
     html+=buildTable(
@@ -553,6 +568,13 @@ function drawChi2(){
         d.map(x=>x.dec_M4),
         d.map(x=>x.e_dec_M4)
     );
+    html+=buildTable(
+    "M5",
+        s,
+        d.map(x=>x.dec_M5),
+        d.map(x=>x.e_dec_M5)
+    );
+    
     document.getElementById("chi2content").innerHTML=html;
 }
 
@@ -606,6 +628,9 @@ afterDatasetsDraw(chart){
         let y_m3=chart.scales.y.getPixelForValue(d.dec_M3);
         let x_m4=chart.scales.x.getPixelForValue(d.ra_M4);
         let y_m4=chart.scales.y.getPixelForValue(d.dec_M4);
+        let x_m5=chart.scales.x.getPixelForValue(d.ra_M5);
+        let y_m5=chart.scales.y.getPixelForValue(d.dec_M5);
+
 
         // NoCorr -> M1
         ctx.beginPath();
@@ -647,6 +672,17 @@ afterDatasetsDraw(chart){
 	ctx.strokeStyle=color;
 	ctx.lineWidth=2;
 	ctx.setLineDash([2,2,10,2]);   // dash-dot style
+
+	ctx.stroke();
+
+        // NoCorr -> M5
+	ctx.beginPath();
+	ctx.moveTo(x_nc,y_nc);
+	ctx.lineTo(x_m5,y_m5);
+
+	ctx.strokeStyle=color;
+	ctx.lineWidth=2;
+	ctx.setLineDash([12,4]);   // long-dash style
 
 	ctx.stroke();
 
@@ -742,6 +778,18 @@ function drawSky(){
 	    pointBackgroundColor:"#FFD700",   // gold fill
 	    backgroundColor:"#FFD700"
       });
+        // M5
+        datasets.push({
+            label:"",
+            data:[{x:row.ra_M5,y:row.dec_M5}],
+            pointStyle:'crossRot',
+            pointRadius:7,
+            pointHoverRadius:9,
+            pointBorderWidth:2,
+            pointBorderColor:"black",
+            pointBackgroundColor:"#00897B",
+            backgroundColor:"#00897B"
+        });
     });
 
     // X-band
@@ -779,8 +827,8 @@ function drawSky(){
             scales:{
 
                 x:{
-                    min:-1,
-                    max:1,
+                    min:-0.5,
+                    max:1.5,
                     reverse:true,
 
                     title:{
@@ -791,7 +839,7 @@ function drawSky(){
 
                 y:{
                     min:-0.5,
-                    max:0.5,
+                    max:1,
 
                     title:{
                         display:true,
