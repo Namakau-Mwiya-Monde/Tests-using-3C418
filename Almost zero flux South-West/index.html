@@ -126,13 +126,13 @@ canvas{
 ■ M2 &nbsp;&nbsp;
 ♦ M3 &nbsp;&nbsp;
 ★ M4 &nbsp;&nbsp;
-✚ M5
+
 
 — solid: NoCorr → M1 &nbsp;&nbsp;
 ⋯ dotted: NoCorr → M2 &nbsp;&nbsp;
 – – dashed: NoCorr → M3 <br>
 ⋅⋅⋅ dash-dot: NoCorr → M4 &nbsp;&nbsp;
-— — long-dash: NoCorr → M5
+
 
 <b>X</b>: X-band a priori
 </div>
@@ -408,8 +408,8 @@ function drawTS(){
                 },
 
                 y:{
-                    min:-0.5,
-                    max:0.5,
+                    min:-1.0,
+                    max:1.0,
                     title:{
                         display:true,
                         text:'Dec Offset (mas)'
@@ -827,8 +827,8 @@ function drawSky(){
             scales:{
 
                 x:{
-                    min:-0.5,
-                    max:1.5,
+                    min:-1.0,
+                    max:1.0,
                     reverse:true,
 
                     title:{
@@ -838,7 +838,7 @@ function drawSky(){
                 },
 
                 y:{
-                    min:-0.5,
+                    min:-1.0,
                     max:1,
 
                     title:{
